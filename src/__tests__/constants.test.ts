@@ -34,4 +34,17 @@ describe('extractErrorMessagesFromResponse', () => {
     expect(messages).toHaveLength(1);
     expect(messages[0].trim()).not.toBe('');
   });
+
+  it('uses an action-neutral fallback by default and honors a caller-supplied one', () => {
+    expect(extractErrorMessagesFromResponse({})[0]).not.toContain('saving');
+    expect(extractErrorMessagesFromResponse(null, 'Could not print the document')[0]).toBe(
+      'Could not print the document',
+    );
+    expect(
+      extractErrorMessagesFromResponse(
+        { responseBody: { error: { fieldErrors: { batchNo: [{ message: '' }] } } } },
+        'Could not delete the reference',
+      )[0],
+    ).toBe('Could not delete the reference');
+  });
 });
